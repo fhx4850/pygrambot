@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+
+
 class Message:
     pass
     #date
@@ -32,3 +35,9 @@ class UpdateDt:
 
     def new_chat(self):
         self.chat = Chat()
+
+
+@dataclass
+class BotCommandDt:
+    command: str
+    description: str

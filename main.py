@@ -1,4 +1,4 @@
-from pygrambot.bothandlers.bot import Bot
+from pygrambot.bot.bothandlers.bot import Bot
 
 
 if __name__ == '__main__':

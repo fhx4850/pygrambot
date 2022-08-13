@@ -1,7 +1,8 @@
-from pygrambot.exceptions.handlers import UpdateError
-from pygrambot.data_objects.objects import UpdateDt
-from pygrambot.bothandlers.commands import SendCommand
+from pygrambot.exceptions.main_exc import UpdateError
+from pygrambot.bot.botcommands.api_commands import SendCommand
 import asyncio
+from pygrambot.data_objects.objects import UpdateDt
+from pygrambot.bot.botcommands.commands import get_commands
 
 
 class Receiver:
@@ -41,12 +42,12 @@ class Receiver:
                 for key in update['message']:
                     if key == 'from':
                         for fromk in update['message']['from']:
-                            setattr(update_dt.message, fromk, update['message']['from'][fromk])
+                            setattr(update_dt.message, fromk, str(update['message']['from'][fromk]))
                     elif key == 'chat':
                         for chat in update['message']['chat']:
-                            setattr(update_dt.chat, chat, update['message']['chat'][chat])
+                            setattr(update_dt.chat, chat, str(update['message']['chat'][chat]))
                     else:
-                        setattr(update_dt.message, key, update['message'][key])
+                        setattr(update_dt.message, key, str(update['message'][key]))
                 updates_list.append(update_dt)
             return updates_list
         else:
@@ -75,7 +76,14 @@ class MainHandler:
         """
         Processing a single message.
         """
-        pass
+
+        try:
+            for command in await get_commands():
+                if upd.message.text == command.command:
+                    command.handler.updatedt = upd
+                    await command.handler().start()
+        except Exception as e:
+            raise e
 
     async def _handler(self):
         """
@@ -93,3 +101,19 @@ class MainHandler:
         await self.queue.join()
         for task in self._tasks:
             task.cancel()
+
+
+class CustomHandler:
+    """
+    Class for adding custom handlers.
+    To use it, you need to create a handler class and inherit from this class,
+    the callback is performed in the start method.
+    """
+
+    updatedt: UpdateDt = None
+
+    async def start(self):
+        """
+        Handler start.
+        """
+        raise NotImplementedError
