@@ -3,6 +3,7 @@ from pygrambot.bot.botcommands.api_commands import SendCommand
 import asyncio
 from pygrambot.data_objects.objects import UpdateDt
 from pygrambot.bot.botcommands.commands import get_commands
+from pygrambot.bot.middlewares import get_middlewares
 
 
 class Receiver:
@@ -78,10 +79,14 @@ class MainHandler:
         """
 
         try:
-            for command in await get_commands():
-                if upd.message.text == command.command:
-                    command.handler.updatedt = upd
-                    await command.handler().start()
+            for middl in get_middlewares():
+                # run middleware
+                u = await middl.run(upd)
+                for command in await get_commands():
+                    # run commad
+                    if u.message.text == command.command:
+                        command.handler.updatedt = u
+                        await command.handler().start()
         except Exception as e:
             raise e
 
