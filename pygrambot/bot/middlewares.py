@@ -11,6 +11,7 @@ class NewMiddleware:
     To do this, you need to inherit from this class and implement the run method.
     """
     _middlewares_list: list = []
+    enable: bool = True
 
     @classmethod
     async def run(cls, updatedt: UpdateDt) -> UpdateDt:
@@ -24,6 +25,7 @@ class NewMiddleware:
 
 class ThrottlingMiddleware(NewMiddleware):
     time = time.time()
+    users = {}
     timeout: float = 1
     message: str = 'Too many messages.'
 
@@ -34,21 +36,46 @@ class ThrottlingMiddleware(NewMiddleware):
 
     @classmethod
     async def run(cls, updatedt: UpdateDt) -> UpdateDt:
-        t1 = cls.time
-        t2 = time.time()
-        cls.time = time.time()
-        if t1:
-            msg_time = t2 - t1
-            if msg_time < cls.timeout:
-                await SendCommand(TOKEN).sendMessage(updatedt.chat.id, text=cls.message,
-                                                     reply_to_message_id=updatedt.message.message_id)
-                updatedt.message.text = ''
+        try:
+            if not updatedt.message.id in cls.users.keys():
+                cls.users[updatedt.message.id] = [updatedt.message.message_id, time.time()]
+            else:
+                t1 = cls.users[updatedt.message.id][1]
+                t2 = time.time()
+                mtime = t2 - t1
+                if mtime < cls.timeout:
+                    await SendCommand(TOKEN).sendMessage(chat_id=updatedt.message.id, text=cls.message,
+                                                         reply_to_message_id=cls.users[updatedt.message.id][0])
+                cls.users[updatedt.message.id] = [updatedt.message.message_id, time.time()]
+        except Exception as e:
+            print(f'ThrottlingMiddleware error: {e}')
+
         return updatedt
 
     @classmethod
     def set_timeout_sec(cls, value: float):
         cls.timeout = value
         return cls
+
+
+class CatchNextMessageMiddleware(NewMiddleware):
+    """
+    Middleware that catches a single message and sends it for processing.
+    """
+    enable = True
+    messages = []
+
+    @classmethod
+    async def add_message(cls, message_id):
+        cls.messages.append(message_id)
+
+    @classmethod
+    async def run(cls, updatedt: UpdateDt) -> UpdateDt:
+        if updatedt.message.id in cls.messages:
+            updatedt.data['catch_msg'] = []
+            updatedt.data['catch_msg'].append(updatedt)
+            cls.messages.remove(updatedt.message.id)
+        return updatedt
 
 
 def get_middlewares() -> list[NewMiddleware]:
@@ -65,4 +92,5 @@ def get_middlewares() -> list[NewMiddleware]:
 
         for i in middl_module.middlewareslist:
             middl.append(i)
+    middl.append(CatchNextMessageMiddleware)
     return middl

@@ -3,7 +3,7 @@ from pygrambot.bot.botcommands.api_commands import SendCommand
 import asyncio
 from pygrambot.data_objects.objects import UpdateDt
 from pygrambot.bot.botcommands.commands import get_commands
-from pygrambot.bot.middlewares import get_middlewares
+from pygrambot.bot.middlewares import get_middlewares, CatchNextMessageMiddleware
 
 
 class Receiver:
@@ -79,14 +79,19 @@ class MainHandler:
         """
 
         try:
+            u = upd
             for middl in get_middlewares():
-                # run middleware
-                u = await middl.run(upd)
-                for command in await get_commands():
-                    # run commad
-                    if u.message.text == command.command:
-                        command.handler.updatedt = u
-                        await command.handler().start()
+                if middl.enable:
+                    u = await middl.run(upd)
+            for command in await get_commands():
+                if u.message.text == command.command:
+                    command.handler.updatedt = u
+                    await command.handler().start()
+                    # When one handler is executed, the others are unavailable.
+                    break
+                elif command.command == '*':
+                    command.handler.updatedt = u
+                    await command.handler().start()
         except Exception as e:
             raise e
 
@@ -122,3 +127,28 @@ class CustomHandler:
         Handler start.
         """
         raise NotImplementedError
+
+
+class CatchNextMessage(CustomHandler):
+    """
+    The handler passes the captured message to the CatchNextMessageMiddleware.
+    """
+    async def start(self):
+        await CatchNextMessageMiddleware.add_message(self.updatedt.message.id)
+
+
+class CatchMessageHandler(CustomHandler):
+    """
+    Handling the captured message.
+    """
+    async def start(self):
+        try:
+            if 'catch_msg' in self.updatedt.data and self.updatedt.data['catch_msg']:
+                for data in self.updatedt.data['catch_msg']:
+                    await self.handle(data)
+                    del self.updatedt.data['catch_msg'][0]
+        except Exception as e:
+            pass
+
+    async def handle(self, updatedt):
+        pass

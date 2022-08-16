@@ -10,6 +10,7 @@ class NewCommand:
     """
     _all_commands: list[BotCommandDt] = []
 
+    # command "*" - receives all messages
     command: str = None
     description: str = None
     handler: Callable = None

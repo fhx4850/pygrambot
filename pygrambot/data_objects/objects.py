@@ -29,6 +29,7 @@ class UpdateDt:
     update_id: int = None
     message: Message = None
     chat: Chat = None
+    data: dict = {}
 
     def new_message(self):
         self.message = Message()

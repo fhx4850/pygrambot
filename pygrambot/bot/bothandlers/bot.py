@@ -18,7 +18,9 @@ class Bot:
         Sets generated commands for the bot.
         """
         for comm in await get_commands():
-            comm.set_command_list()
+            # ignoring command *
+            if comm.command != '*':
+                comm.set_command_list()
 
         commands_list = []
         for bot_command in NewCommand.get_command_list():
