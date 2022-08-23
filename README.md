@@ -1,5 +1,5 @@
 <div align="center">
-  <img width=300px height=200px src="https://github.com/uwine4850/pygrambot/tree/master/docs/pgb_logo.svg" alt="Project logo">
+  <img width=300px height=200px src="https://raw.githubusercontent.com/uwine4850/pygrambot/0504f574a199d5bfc84f36b2e71f203d6ec09e87/docs/pgb_logo.svg" alt="Project logo">
 </div>
 
 <h1 align="center" style="margin: 0">Pytelegrambot</h1>
@@ -12,7 +12,7 @@
 
 ## About the project <a name = "about"></a>
 
-Pytelegrambot is a python framework for creating telegram bots. The framework is completely asynchronous. The main idea of ​​this project is to make the architecture of telegram bots as structured, as possible and easy to use and understand.
+Pytelegrambot is a python framework for creating telegram bots. The framework is completely asynchronous. The main idea of this project is to make the architecture of telegram bots as structured, as possible and easy to use and understand.
 
 ## Getting Started <a name = "getting_started"></a>
 
