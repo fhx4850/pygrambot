@@ -4,7 +4,7 @@
 
 **Middleware** (in this framework) is software that is called (in order) every day before executing a command and can change the initial data, execute custom logic, block command execution, and much more.
 
-To create a middleware, you need to import the ```NewMiddleware``` class (```from pygrambot.bot.middlewares import NewMiddleware```) and implement the ```run``` method. The method must always return the data type [UpdateDt](https://github.com/uwine4850/pygrambot/tree/master/docs/data_objects.md). 
+To create a middleware, you need to import the ```NewMiddleware``` class (```from pygrambot.bot.middlewares import NewMiddleware```) and implement the ```run``` method. The method must always return the data type [UpdateDt](https://github.com/uwine4850/pygrambot/blob/master/docs/data_objects.md). 
 Next, you need to add the **path to the middleware folder** to ```RELATIVE_PATH_TO_MIDDLEWARES```(conf).
 
 **Code Example**:

@@ -1,2 +1,5 @@
 pygrambot.egg-info/
 dist/
+testbot/
+config/
+main.py

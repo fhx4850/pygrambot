@@ -5,9 +5,9 @@
 <h1 align="center" style="margin: 0">Pytelegrambot</h1>
 
 ## Content
-* [Guide to Basic Operations](https://github.com/uwine4850/pygrambot/tree/master/docs/create_project.md)
-* [Guidelines for creating middlewares](https://github.com/uwine4850/pygrambot/docs/tree/master/create_middlewares.md)
-* [Built-in data types](https://github.com/uwine4850/pygrambot/tree/master/docs/data_objects.md)
+* [Guide to Basic Operations](https://github.com/uwine4850/pygrambot/blob/master/docs/create_project.md)
+* [Guidelines for creating middlewares](https://github.com/uwine4850/pygrambot/blob/master/docs/create_middlewares.md)
+* [Built-in data types](https://github.com/uwine4850/pygrambot/blob/master/docs/data_objects.md)
 
 
 ## About the project <a name = "about"></a>
@@ -43,4 +43,4 @@ To start the bot, you need to enter the command:
 python3 main.py start
 ```
 
-> How to use the bot further can be found in the [additional instructions](https://github.com/uwine4850/pygrambot/tree/master/docs/create_project.md).
+> How to use the bot further can be found in the [additional instructions](https://github.com/uwine4850/pygrambot/blob/master/docs/create_project.md).
