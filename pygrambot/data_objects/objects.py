@@ -42,3 +42,9 @@ class UpdateDt:
 class BotCommandDt:
     command: str
     description: str
+
+
+@dataclass
+class CatchMultipleMessageDt:
+    user_id: str
+    messages = []
