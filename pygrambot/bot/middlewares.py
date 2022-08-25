@@ -1,4 +1,4 @@
-from pygrambot.data_objects.objects import UpdateDt
+from pygrambot.data_objects.objects import UpdateDt, CatchMultipleMessageDt
 from config.bot_settings import RELATIVE_PATH_TO_MIDDLEWARES
 import time
 from pygrambot.bot.botcommands.api_commands import SendCommand
@@ -64,6 +64,7 @@ class CatchNextMessageMiddleware(NewMiddleware):
     """
     enable = True
     messages = []
+    handler = None
 
     @classmethod
     async def add_message(cls, message_id):
@@ -74,7 +75,28 @@ class CatchNextMessageMiddleware(NewMiddleware):
         if updatedt.message.id in cls.messages:
             updatedt.data['catch_msg'] = []
             updatedt.data['catch_msg'].append(updatedt)
+            await cls.handler(updatedt)
             cls.messages.remove(updatedt.message.id)
+        return updatedt
+
+
+class CatchMultipleMessageMiddleware(NewMiddleware):
+    """
+    The middleware collects all messages according to the settings and runs the installed handler.
+    """
+    stop_commands = []
+    messages: list[CatchMultipleMessageDt] = []
+    handler = None
+
+    @classmethod
+    async def run(cls, updatedt: UpdateDt) -> UpdateDt:
+        for cmm in cls.messages:
+            if cmm.user_id == updatedt.message.id:
+                # stop
+                if updatedt.message.text in cls.stop_commands:
+                    cls.messages.remove(cmm)
+                else:
+                    await cls.handler(updatedt)
         return updatedt
 
 
@@ -92,5 +114,9 @@ def get_middlewares() -> list[NewMiddleware]:
 
         for i in middl_module.middlewareslist:
             middl.append(i)
+
+    # append static middlewares
     middl.append(CatchNextMessageMiddleware)
+    middl.append(CatchMultipleMessageMiddleware)
+
     return middl

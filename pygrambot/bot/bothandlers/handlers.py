@@ -1,9 +1,9 @@
 from pygrambot.exceptions.main_exc import UpdateError
 from pygrambot.bot.botcommands.api_commands import SendCommand
 import asyncio
-from pygrambot.data_objects.objects import UpdateDt
+from pygrambot.data_objects.objects import UpdateDt, CatchMultipleMessageDt
 from pygrambot.bot.botcommands.commands import get_commands
-from pygrambot.bot.middlewares import get_middlewares, CatchNextMessageMiddleware
+from pygrambot.bot.middlewares import get_middlewares, CatchNextMessageMiddleware, CatchMultipleMessageMiddleware
 
 
 class Receiver:
@@ -82,16 +82,30 @@ class MainHandler:
             u = upd
             for middl in get_middlewares():
                 if middl.enable:
+
+                    # start middleware
                     u = await middl.run(upd)
+
             for command in await get_commands():
                 if u.message.text == command.command:
                     command.handler.updatedt = u
-                    await command.handler().start()
+
+                    # start handler
+                    try:
+                        await command.handler().start()
+                    except Exception as e:
+                        print(e)
+
                     # When one handler is executed, the others are unavailable.
                     break
                 elif command.command == '*':
                     command.handler.updatedt = u
-                    await command.handler().start()
+                    # start handler
+                    try:
+                        await command.handler().start()
+                    except Exception as e:
+                        print(e)
+
         except Exception as e:
             raise e
 
@@ -134,21 +148,33 @@ class CatchNextMessage(CustomHandler):
     The handler passes the captured message to the CatchNextMessageMiddleware.
     """
     async def start(self):
+        CatchNextMessageMiddleware.handler = self.handle
         await CatchNextMessageMiddleware.add_message(self.updatedt.message.id)
 
+    async def handle(self, updatedt: UpdateDt):
+        pass
 
-class CatchMessageHandler(CustomHandler):
+
+class CatchMultipleMessages(CustomHandler):
     """
-    Handling the captured message.
+    Starts and configures CatchMultipleMessageMiddleware to collect multiple user messages.
+    Terminated with the stop command.
     """
+    _stop_commands = []
+
+    @classmethod
+    def add_stop_commands(cls, commands: list[str]):
+        cls._stop_commands = commands
+        return cls
+
     async def start(self):
-        try:
-            if 'catch_msg' in self.updatedt.data and self.updatedt.data['catch_msg']:
-                for data in self.updatedt.data['catch_msg']:
-                    await self.handle(data)
-                    del self.updatedt.data['catch_msg'][0]
-        except Exception as e:
-            pass
+        """
+        Configures CatchMultipleMessageMiddleware.
+        """
+        CatchMultipleMessageMiddleware.messages.append(CatchMultipleMessageDt(self.updatedt.message.id))
+        CatchMultipleMessageMiddleware.handler = self.handle
+        for command in self._stop_commands:
+            CatchMultipleMessageMiddleware.stop_commands.append(command)
 
     async def handle(self, updatedt):
         pass
