@@ -1,2 +1,4 @@
 pygrambot.egg-info/
 dist/
+_mybot/
+config/
