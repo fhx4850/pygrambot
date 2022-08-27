@@ -1,9 +1,10 @@
 from pygrambot.exceptions.main_exc import UpdateError
 from pygrambot.bot.botcommands.api_commands import SendCommand
 import asyncio
-from pygrambot.data_objects.objects import UpdateDt, CatchMultipleMessageDt
+from pygrambot.data_objects.objects import UpdateDt
 from pygrambot.bot.botcommands.commands import get_commands
 from pygrambot.bot.middlewares import get_middlewares, CatchNextMessageMiddleware, CatchMultipleMessageMiddleware
+from pygrambot.bot.config import ACCEPT_ALL_MSG_COMMANDS
 
 
 class Receiver:
@@ -98,7 +99,7 @@ class MainHandler:
 
                     # When one handler is executed, the others are unavailable.
                     break
-                elif command.command == '*':
+                elif command.command in ACCEPT_ALL_MSG_COMMANDS:
                     command.handler.updatedt = u
                     # start handler
                     try:
@@ -171,7 +172,7 @@ class CatchMultipleMessages(CustomHandler):
         """
         Configures CatchMultipleMessageMiddleware.
         """
-        CatchMultipleMessageMiddleware.messages.append(CatchMultipleMessageDt(self.updatedt.message.id))
+        CatchMultipleMessageMiddleware.messages.append(self.updatedt.message.id)
         CatchMultipleMessageMiddleware.handler = self.handle
         for command in self._stop_commands:
             CatchMultipleMessageMiddleware.stop_commands.append(command)

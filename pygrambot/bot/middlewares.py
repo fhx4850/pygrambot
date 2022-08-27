@@ -1,4 +1,4 @@
-from pygrambot.data_objects.objects import UpdateDt, CatchMultipleMessageDt
+from pygrambot.data_objects.objects import UpdateDt
 from config.bot_settings import RELATIVE_PATH_TO_MIDDLEWARES
 import time
 from pygrambot.bot.botcommands.api_commands import SendCommand
@@ -79,19 +79,22 @@ class CatchNextMessageMiddleware(NewMiddleware):
             cls.messages.remove(updatedt.message.id)
         return updatedt
 
+    async def test(self):
+        print('tetetetststststs')
+
 
 class CatchMultipleMessageMiddleware(NewMiddleware):
     """
     The middleware collects all messages according to the settings and runs the installed handler.
     """
     stop_commands = []
-    messages: list[CatchMultipleMessageDt] = []
+    messages: list = []
     handler = None
 
     @classmethod
     async def run(cls, updatedt: UpdateDt) -> UpdateDt:
         for cmm in cls.messages:
-            if cmm.user_id == updatedt.message.id:
+            if cmm == updatedt.message.id:
                 # stop
                 if updatedt.message.text in cls.stop_commands:
                     cls.messages.remove(cmm)

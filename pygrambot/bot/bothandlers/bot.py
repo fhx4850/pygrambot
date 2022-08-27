@@ -3,6 +3,7 @@ from config.bot_settings import TOKEN
 import asyncio
 from pygrambot.bot.botcommands.commands import NewCommand, get_commands
 from pygrambot.bot.botcommands.api_commands import SendCommand
+from pygrambot.bot.config import ACCEPT_ALL_MSG_COMMANDS
 
 
 class Bot:
@@ -18,8 +19,7 @@ class Bot:
         Sets generated commands for the bot.
         """
         for comm in await get_commands():
-            # ignoring command *
-            if comm.command != '*':
+            if not comm.command in ACCEPT_ALL_MSG_COMMANDS:
                 comm.set_command_list()
 
         commands_list = []
