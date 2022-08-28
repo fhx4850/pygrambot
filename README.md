@@ -7,6 +7,7 @@
 ## Content
 * [Guide to Basic Operations](https://github.com/uwine4850/pygrambot/blob/master/docs/create_project.md)
 * [Guidelines for creating middlewares](https://github.com/uwine4850/pygrambot/blob/master/docs/create_middlewares.md)
+* [Creating message catchers](https://github.com/uwine4850/pygrambot/blob/master/docs/creating_message_catchers.md)
 * [Built-in data types](https://github.com/uwine4850/pygrambot/blob/master/docs/data_objects.md)
 
 
