@@ -2,8 +2,9 @@ from pygrambot.exceptions.main_exc import UpdateError
 from pygrambot.bot.botcommands.api_commands import SendCommand
 import asyncio
 from pygrambot.data_objects.objects import UpdateDt
+from config.bot_settings import TOKEN
 from pygrambot.bot.botcommands.commands import get_commands
-from pygrambot.bot.middlewares import get_middlewares, CatchNextMessageMiddleware, CatchMultipleMessageMiddleware
+from pygrambot.bot.middlewares import get_middlewares, CatchNextMessageMiddleware, CatchMultipleMessageMiddleware, FormMiddleware
 from pygrambot.bot.config import ACCEPT_ALL_MSG_COMMANDS
 
 
@@ -176,6 +177,29 @@ class CatchMultipleMessages(CustomHandler):
         CatchMultipleMessageMiddleware.handler = self.handle
         for command in self._stop_commands:
             CatchMultipleMessageMiddleware.stop_commands.append(command)
+
+    async def handle(self, updatedt):
+        pass
+
+
+class FormHandler(CustomHandler):
+    """
+    Launching and processing the form.
+    """
+    fields = None
+
+    async def start(self):
+        FormMiddleware.fields = self.fields
+        FormMiddleware.handler = self.handle
+        FormMiddleware.formatter = self.formatter
+        FormMiddleware.users_id.append(self.updatedt.message.id)
+        await SendCommand(TOKEN).sendMessage(self.updatedt.message.id, f'{self.fields[0]}:')
+
+    async def formatter(self, updatedt, form_data: list):
+        form = {}
+        for x, form_data in enumerate(form_data):
+            form[self.fields[x]] = form_data
+        updatedt.data['form'] = form
 
     async def handle(self, updatedt):
         pass
