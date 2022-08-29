@@ -1,4 +1,4 @@
-from pygrambot.bot.bothandlers.handlers import CustomHandler, CatchMultipleMessages, CatchNextMessage
+from pygrambot.bot.bothandlers.handlers import CustomHandler, CatchMultipleMessages, CatchNextMessage, FormHandler
 from pygrambot.bot.botcommands.api_commands import SendCommand
 from config.bot_settings import TOKEN
 
@@ -16,3 +16,10 @@ class ProcessingCatchMsg(CatchNextMessage):
 class CatchMultMsg(CatchMultipleMessages):
     async def handle(self, updatedt):
         await SendCommand(TOKEN).sendMessage(updatedt.chat.id, updatedt.message.text)
+
+
+class Form(FormHandler):
+    fields = ['test1', 'test2', 'test3']
+
+    async def handle(self, updatedt):
+        print(updatedt.message.id, updatedt.data['form'])

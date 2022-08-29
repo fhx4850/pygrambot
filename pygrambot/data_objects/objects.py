@@ -42,3 +42,10 @@ class UpdateDt:
 class BotCommandDt:
     command: str
     description: str
+
+
+@dataclass
+class FormDt:
+    user_id: str
+    count: int
+    fields_data: dict = None

@@ -1,9 +1,9 @@
 from pygrambot.bot.botcommands.commands import NewCommand
-from _mybot.handlers import StartHandler, ProcessingCatchMsg, CatchMultMsg
+from _mybot.handlers import StartHandler, ProcessingCatchMsg, CatchMultMsg, Form
 
 
 class StartCommand(NewCommand):
-    command = '*'
+    command = 'start'
     description = 'Starting bot.'
     handler = StartHandler
 
@@ -16,3 +16,8 @@ class CatchMsg(NewCommand):
 class Test(NewCommand):
     command = 'm'
     handler = CatchMultMsg.add_stop_commands(['stop'])
+
+
+class StartForm(NewCommand):
+    command = 'f'
+    handler = Form
