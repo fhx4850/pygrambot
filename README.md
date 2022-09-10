@@ -2,7 +2,7 @@
   <img width=300px height=200px src="https://raw.githubusercontent.com/uwine4850/pygrambot/0504f574a199d5bfc84f36b2e71f203d6ec09e87/docs/pgb_logo.svg" alt="Project logo">
 </div>
 
-<h1 align="center" style="margin: 0">Pytelegrambot</h1>
+<h1 align="center" style="margin: 0">Pygrambot</h1>
 
 ## Content
 * [Guide to Basic Operations](https://github.com/uwine4850/pygrambot/blob/master/docs/create_project.md)
@@ -26,7 +26,7 @@ To create your own project, follow these instructions.
 To install, run the following command:
 
 ```
-pip install pytelegrambot
+pip install pygrambot
 ```
 After executing the command, the framework will be available in your python virtual environment.
 
